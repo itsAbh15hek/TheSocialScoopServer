@@ -7,7 +7,7 @@ const User = require("../Schemas/UserSchema");
 //Creating a User
 router.post("/create", async (req, res) => {
   //Destructuring the contents of the request
-  const { username, email, password } = req.body;
+  const { name, username, email, password } = req.body;
 
   try {
     //Hashing the password using bcrypt
@@ -19,7 +19,7 @@ router.post("/create", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     //Creating a new User
-    const user = new User({ username, email, password: hashedPassword });
+    const user = new User({ name, username, email, password: hashedPassword });
 
     //Saving the new User to Database
     const newUser = await user.save();
