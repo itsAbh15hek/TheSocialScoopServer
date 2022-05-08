@@ -14,13 +14,7 @@ router.post("/signup", async (req, res) => {
     // Checking if passwords match
     if (password !== password2) throw new Error("Passwords do not match.");
 
-    //Hashing the password using bcrypt
-
-    //Genrating the Salt
-    const salt = await bcrypt.genSalt(10);
-
-    //Genrating Hashed password
-    // const hashedPassword = await bcrypt.hash(password, salt);
+    //Genrating encrypted password
     const hashedPassword = cryptojs.AES.encrypt(
       password,
       process.env.SEC
@@ -51,7 +45,6 @@ router.post("/login", async (req, res) => {
     !user && res.status(404).json("User Not Found!");
 
     //Checking that the entered password is matched
-    // const validPassword = await bcrypt.compare(password, user.password);
     const hashedPassword = await cryptojs.AES.decrypt(
       user.password,
       process.env.SEC
