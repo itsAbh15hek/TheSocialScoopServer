@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const bcrypt = require("bcrypt");
 const cryptojs = require("crypto-js");
 
 //Importing the Schema's

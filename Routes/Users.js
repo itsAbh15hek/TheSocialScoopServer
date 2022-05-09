@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const bcrypt = require("bcrypt");
+const cryptojs = require("crypto-js");
 
 //Schema's
 const User = require("../Schemas/UserSchema");
@@ -13,11 +13,12 @@ router.put("/:id", async (req, res) => {
   if (userId === req.params.id || req.body.isAdmin) {
     //Checking if the password is been requested to changed
     if (password) {
-      //Updating the password using bcrypt
+      //Updating the password using AES
       try {
-        const salt = await bcrypt.genSalt(10);
-
-        req.body.password = await bcrypt.hash(password, salt);
+        req.body.password = await cryptojs.AES.encrypt(
+          password,
+          process.env.SEC
+        ).toString();
       } catch (error) {
         //Error Handling
         return res.status(500).json(error);
