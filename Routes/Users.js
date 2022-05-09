@@ -60,19 +60,28 @@ router.delete("/:id", async (req, res) => {
 });
 
 //Get User
-router.get("/:id", async (req, res) => {
+router.get("/:query", async (req, res) => {
   try {
     //Finding the user by id provided
-    const user = await User.findById(req.params.id);
+    // const user = await User.findById(req.params.id);
+    let user = await User.where("username").equals(
+      ($regex = new RegExp("^" + req.params.query.toLowerCase(), "i"))
+    );
+
+    if (user.length === 0) {
+      user = await User.where("name").equals(
+        ($regex = new RegExp("^" + req.params.query.toLowerCase(), "i"))
+      );
+    }
 
     //Modifing the object so that confidential information remains hidden
-    const { password, updatedAt, isAdmin, __v, ...displayProps } = user._doc;
+    const { password, updatedAt, isAdmin, __v, ...displayProps } = user;
 
     //Sending back the response
     res.status(200).json(displayProps);
   } catch (error) {
     //Error Handling
-    res.status(500).json(error);
+    res.status(500).json(error.message);
   }
 });
 
@@ -139,6 +148,20 @@ router.put("/unfollow/:id", async (req, res) => {
   } else {
     //Trying to unfollow current user
     res.status(403).json("You can not Unfollow Yourself!");
+  }
+});
+
+//Fetching the following of a User
+router.get("/friends/:query", async (req, res) => {
+  try {
+    //Finding the user by username provided
+    const user = await User.find({ username: req.params.query });
+
+    //Sending backk the response
+    res.status(200).json(user[0].following);
+  } catch (error) {
+    //Error Handling
+    res.status(500).json(error);
   }
 });
 
