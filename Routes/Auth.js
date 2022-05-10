@@ -7,7 +7,8 @@ const User = require("../Schemas/UserSchema");
 //Creating a User
 router.post("/signup", async (req, res) => {
   //Destructuring the contents of the request
-  const { name, username, email, password, password2 } = req.body;
+  const { name, username, email, password, password2, profilePicture } =
+    req.body;
 
   try {
     // Checking if passwords match
@@ -20,7 +21,13 @@ router.post("/signup", async (req, res) => {
     ).toString();
 
     //Creating a new User
-    const user = new User({ name, username, email, password: hashedPassword });
+    const user = new User({
+      name,
+      username,
+      email,
+      password: hashedPassword,
+      profilePicture,
+    });
 
     //Saving the new User to Database
     const newUser = await user.save();
