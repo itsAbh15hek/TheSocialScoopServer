@@ -158,8 +158,14 @@ router.get("/friends/:query", async (req, res) => {
     //Finding the user by username provided
     const user = await User.find({ username: req.params.query });
 
+    //Fetching every friend details using the id given in following array
+    const friends = await User.where("_id")
+      .equals(user[0].following)
+      .populate("following")
+      .select("name profilePicture _id username");
+    // console.log(friends);
     //Sending backk the response
-    res.status(200).json(user[0].following);
+    res.status(200).json(friends);
   } catch (error) {
     //Error Handling
     res.status(500).json(error);
