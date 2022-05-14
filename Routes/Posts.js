@@ -125,10 +125,10 @@ router.get("/profile/:username", async (req, res) => {
 });
 
 //Get timeline Posts
-router.get("/", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     //Finding user in the database
-    const user = await User.findById(req.body.userId);
+    const user = await User.findById(req.params.id);
 
     //Fetching all the user posts
     const userPosts = await Post.find({ userId: user._id });
@@ -142,7 +142,7 @@ router.get("/", async (req, res) => {
     res.status(200).json(userPosts.concat(...freindsPosts));
   } catch (error) {
     //Error Handling
-    res.status(500).json(error);
+    res.status(500).json(error.message);
   }
 });
 
