@@ -130,16 +130,32 @@ router.get("/:id", async (req, res) => {
     //Finding user in the database
     const user = await User.findById(req.params.id);
 
+    //Fetching freinds details
+    const users = [user._id, ...user.following];
     //Fetching all the user posts
-    const userPosts = await Post.find({ userId: user._id });
+    console.log(users);
+    const userDetails = [];
+    const getUserDetails = async () => {
+      await users.forEach(async (id) => {
+        User.findById(id).then(({ _id, name, username, profilePicture }) =>
+          userDetails.push({ _id, name, username, profilePicture })
+        );
+      });
+      console.log("userDetails", userDetails);
+    };
+    getUserDetails();
 
     //Fetching all the user friends posts
-    const freindsPosts = await Promise.all(
-      user.following.map((freindId) => Post.find({ userId: freindId }))
-    );
+    const usersPosts = [];
+
+    userDetails.forEach(async (user) => {
+      // console.log(user);
+      const post = await Post.find({ userId: user._id });
+      console.log("post: " + post);
+    });
 
     //Sending back the response
-    res.status(200).json(userPosts.concat(...freindsPosts));
+    res.status(200).json(userDetails);
   } catch (error) {
     //Error Handling
     res.status(500).json(error.message);
