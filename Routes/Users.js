@@ -172,4 +172,22 @@ router.get("/friends/:query", async (req, res) => {
   }
 });
 
+//Changing the Default Theme
+router.put("/theme/:id", async (req, res) => {
+  try {
+    //Finding the user in the database and changing the default theme
+    const user = await User.findByIdAndUpdate(req.params.id, {
+      $set: {
+        preferDarkTheme: req.body.preferDarkTheme,
+      },
+    });
+
+    //Sending back the response
+    res.status(200).json({ message: "Default Theme Changed", user });
+  } catch (error) {
+    //Error Handling
+    res.status(500).json(error);
+  }
+});
+
 module.exports = router;

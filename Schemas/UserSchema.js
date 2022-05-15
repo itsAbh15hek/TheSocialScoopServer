@@ -55,9 +55,9 @@ const UserSchema = new mongoose.Schema(
     state: {
       type: String,
     },
-    relationship: {
-      type: Number,
-      enum: [1, 2, 3],
+    preferDarkTheme: {
+      type: Boolean,
+      default: true,
     },
   },
   { timestamps: true }
