@@ -127,35 +127,46 @@ router.get("/profile/:username", async (req, res) => {
 //Get timeline Posts
 router.get("/:id", async (req, res) => {
   try {
-    //Finding user in the database
     const user = await User.findById(req.params.id);
-
-    //Fetching freinds details
     const users = [user._id, ...user.following];
-    //Fetching all the user posts
-    console.log(users);
-    const userDetails = [];
-    const getUserDetails = async () => {
-      await users.forEach(async (id) => {
-        User.findById(id).then(({ _id, name, username, profilePicture }) =>
-          userDetails.push({ _id, name, username, profilePicture })
-        );
-      });
-      console.log("userDetails", userDetails);
-    };
-    getUserDetails();
 
-    //Fetching all the user friends posts
-    const usersPosts = [];
+    const postsArray = await Promise.all(
+      users.map(async (id) => {
+        const posts = await Post.where("userId").equals(id);
+        return posts;
+      })
+    ).then((value) => value);
 
-    userDetails.forEach(async (user) => {
-      // console.log(user);
-      const post = await Post.find({ userId: user._id });
-      console.log("post: " + post);
+    const postData = [];
+
+    postsArray.forEach((arr) => {
+      if (arr.length > 0) arr.forEach((post) => postData.push(post));
     });
 
+    const newPostData = await Promise.all(
+      postData.map(async (post) => {
+        const { name, username, profilePicture } = await User.findById(
+          post.userId
+        );
+        const newData = { ...post._doc, name, username, profilePicture };
+        return newData;
+      })
+    ).then((values) => values);
+
+    const compare = (a, b) => {
+      if (a.updatedAt < b.updatedAt) {
+        return -1;
+      }
+      if (a.updatedAt > b.updatedAt) {
+        return 1;
+      }
+      return 0;
+    };
+
+    // newPostData.sort(compare);
+
     //Sending back the response
-    res.status(200).json(userDetails);
+    res.status(200).json(newPostData);
   } catch (error) {
     //Error Handling
     res.status(500).json(error.message);
