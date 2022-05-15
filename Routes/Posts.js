@@ -154,16 +154,16 @@ router.get("/:id", async (req, res) => {
     ).then((values) => values);
 
     const compare = (a, b) => {
-      if (a.updatedAt < b.updatedAt) {
+      if (a.updatedAt > b.updatedAt) {
         return -1;
       }
-      if (a.updatedAt > b.updatedAt) {
+      if (a.updatedAt < b.updatedAt) {
         return 1;
       }
       return 0;
     };
 
-    // newPostData.sort(compare);
+    newPostData.sort(compare);
 
     //Sending back the response
     res.status(200).json(newPostData);
