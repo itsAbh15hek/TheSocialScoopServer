@@ -108,13 +108,13 @@ router.get("/post/:id", async (req, res) => {
 });
 
 //Get a user's all posts
-router.get("/profile/:username", async (req, res) => {
+router.get("/profile/:id", async (req, res) => {
   try {
     //Finding the user in the database to get his _id
-    const { _id } = await User.findOne({ username: req.params.username });
+    // const { _id } = await User.findById(req.params.id);
 
     //Finding all the post using the _id
-    const posts = await Post.find({ userId: _id });
+    const posts = await Post.find({ userId: req.params.id });
 
     //Sending back the response
     res.status(200).json(posts);
