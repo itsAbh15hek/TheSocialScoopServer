@@ -115,6 +115,17 @@ router.get("/profile/:id", async (req, res) => {
     //Finding all the post using the _id
     const posts = await Post.find({ userId: req.params.id });
 
+    const compare = (a, b) => {
+      if (a.createdAt > b.createdAt) {
+        return -1;
+      }
+      if (a.createdAt < b.createdAt) {
+        return 1;
+      }
+      return 0;
+    };
+
+    posts.sort(compare);
     //Sending back the response
     res.status(200).json(posts);
   } catch (error) {
