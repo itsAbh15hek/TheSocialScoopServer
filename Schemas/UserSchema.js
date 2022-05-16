@@ -55,7 +55,7 @@ const UserSchema = new mongoose.Schema(
     state: {
       type: String,
     },
-    preferDarkTheme: {
+    prefersDarkTheme: {
       type: Boolean,
       default: true,
     },
