@@ -154,10 +154,10 @@ router.get("/:id", async (req, res) => {
     ).then((values) => values);
 
     const compare = (a, b) => {
-      if (a.updatedAt > b.updatedAt) {
+      if (a.createdAt > b.createdAt) {
         return -1;
       }
-      if (a.updatedAt < b.updatedAt) {
+      if (a.createdAt < b.createdAt) {
         return 1;
       }
       return 0;
