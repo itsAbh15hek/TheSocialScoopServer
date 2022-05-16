@@ -60,7 +60,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-//Get User
+//Get Searched Users
 router.get("/:query", async (req, res) => {
   try {
     //Finding the user by id provided
@@ -75,7 +75,7 @@ router.get("/:query", async (req, res) => {
       );
     }
 
-    //Modifing the object so that confidential information remains hidden
+    //Modifying the object so that confidential information remains hidden
     const { password, updatedAt, isAdmin, __v, ...displayProps } = user;
 
     //Sending back the response
@@ -83,6 +83,22 @@ router.get("/:query", async (req, res) => {
   } catch (error) {
     //Error Handling
     res.status(500).json(error.message);
+  }
+});
+
+//Get a User
+router.get("/user/:username", async (req, res) => {
+  try {
+    //Finding user in the database using username
+    const user = await User.find({ username: req.params.username });
+
+    //Modifying the object so that confidential information remains hidden
+    const { password, updatedAt, isAdmin, __v, ...displayProps } = user[0]._doc;
+    //Sending back the response
+    res.status(200).json(displayProps);
+  } catch (error) {
+    //Error Handling
+    res.status(500).json(error);
   }
 });
 
@@ -162,6 +178,26 @@ router.get("/friends/:query", async (req, res) => {
     const friends = await User.where("_id")
       .equals(user[0].following)
       .populate("following")
+      .select("name profilePicture _id username");
+    // console.log(friends);
+    //Sending backk the response
+    res.status(200).json(friends);
+  } catch (error) {
+    //Error Handling
+    res.status(500).json(error);
+  }
+});
+
+//Fetching the followers of a User
+router.get("/followers/:query", async (req, res) => {
+  try {
+    //Finding the user by username provided
+    const user = await User.find({ username: req.params.query });
+
+    //Fetching every friend details using the id given in following array
+    const friends = await User.where("_id")
+      .equals(user[0].followers)
+      .populate("followers")
       .select("name profilePicture _id username");
     // console.log(friends);
     //Sending backk the response
