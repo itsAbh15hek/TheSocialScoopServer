@@ -49,7 +49,6 @@ router.delete("/delete-post/:id", async (req, res) => {
   try {
     //Finding the post with the given id in the database
     const post = await Post.findById(req.params.id);
-
     //Checking if the user is same who has created the post
     if (post.userId === req.body.userId) {
       //Deleting the post from the database
@@ -63,7 +62,7 @@ router.delete("/delete-post/:id", async (req, res) => {
     }
   } catch (error) {
     //Error Handling
-    res.status(500).json(error);
+    res.status(500).json(error.message);
   }
 });
 
