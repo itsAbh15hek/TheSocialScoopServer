@@ -1,3 +1,4 @@
+const { v4: uuid } = require("uuid");
 const router = require("express").Router();
 
 //Schema's
@@ -89,6 +90,45 @@ router.put("/reactions/:id", async (req, res) => {
   } catch (error) {
     //Error Handling
     res.status(500).json(error);
+  }
+});
+
+//Comment on a Post
+router.put("/comment/:postId", async (req, res) => {
+  try {
+    //Finding the post in the database
+    const post = await Post.findById(req.params.postId);
+
+    await post.updateOne({
+      $push: { comments: { id: uuid(), ...req.body.commentData } },
+    });
+    //Sending back the response
+    res.status(200).json("Comment has been posted!");
+  } catch (error) {
+    //Error Handling
+    res.status(500).json(error.message);
+  }
+});
+
+//Delete a Post
+router.put("/delete-comment/:postId", async (req, res) => {
+  try {
+    //Finding the post in the database
+    const post = await Post.findById(req.params.postId);
+    // console.log(req.body.commentId);
+    const newCommentData = post.comments.filter(
+      (comment) => comment.id !== req.body.commentId
+    );
+    //Updating posts
+    await Post.updateOne(
+      { _id: req.params.postId },
+      { $set: { comments: newCommentData } }
+    );
+    //Sending back the response
+    res.status(200).json("Comment has been deleted!");
+  } catch (error) {
+    //Error Handling
+    res.status(500).json(error.message);
   }
 });
 

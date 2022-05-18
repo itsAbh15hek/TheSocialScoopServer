@@ -29,10 +29,6 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    coverPicture: {
-      type: String,
-      default: "",
-    },
     following: {
       type: Array,
       default: [],
@@ -48,12 +44,7 @@ const UserSchema = new mongoose.Schema(
     description: {
       type: String,
       max: 50,
-    },
-    city: {
-      type: String,
-    },
-    state: {
-      type: String,
+      default: "Hey there! I am using The Social Scoop.",
     },
     prefersDarkTheme: {
       type: Boolean,
