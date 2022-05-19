@@ -33,6 +33,14 @@ const UserSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    reqRecieved: {
+      type: Array,
+      default: [],
+    },
+    reqSent: {
+      type: Array,
+      default: [],
+    },
     followers: {
       type: Array,
       default: [],
