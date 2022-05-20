@@ -116,7 +116,7 @@ router.put("/follow-request/:id", async (req, res) => {
 
       //Checking if the user is been followed by the current user
       if (
-        !requestedUser.reqSent.includes(req.body.userId) &&
+        !requestingUser.reqSent.includes(req.params.id) &&
         !requestedUser.reqRecieved.includes(req.body.userId)
       ) {
         //Updating both the users in the database
