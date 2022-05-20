@@ -116,7 +116,7 @@ router.put("/follow-request/:id", async (req, res) => {
 
       //Checking if the user is been followed by the current user
       if (
-        !requestedUser.followers.includes(req.body.userId) &&
+        !requestedUser.reqSent.includes(req.body.userId) &&
         !requestedUser.reqRecieved.includes(req.body.userId)
       ) {
         //Updating both the users in the database
@@ -150,19 +150,25 @@ router.put("/approve-follow-request/:id", async (req, res) => {
       const requestingUser = await User.findById(req.params.id);
 
       //Checking if the user is been followed by the current user
+      console.log(!approvingUser.followers.includes(req.body.userId));
+      console.log(approvingUser.reqRecieved.includes(req.params.id));
       if (
-        !approvingUser.followers.includes(req.body.userId) &&
-        approvingUser.reqRecieved.includes(req.body.userId)
+        !approvingUser.followers.includes(req.params.id) &&
+        approvingUser.reqRecieved.includes(req.params.id) &&
+        !requestingUser.following.includes(req.body.userId) &&
+        requestingUser.reqSent.includes(req.body.userId)
       ) {
         //Updating both the users in the database
         await approvingUser.updateOne({
-          $pull: { reqRecieved: req.body.userId },
+          $pull: { reqRecieved: req.params.id },
         });
         await approvingUser.updateOne({
-          $push: { followers: req.body.userId },
+          $push: { followers: req.params.id },
         });
-        await requestingUser.updateOne({ $pull: { reqSent: req.params.id } });
-        await requestingUser.updateOne({ $push: { following: req.params.id } });
+        await requestingUser.updateOne({ $pull: { reqSent: req.body.userId } });
+        await requestingUser.updateOne({
+          $push: { following: req.body.userId },
+        });
 
         //Sending back the response
         res.status(200).json("User has been Followed");
@@ -190,13 +196,13 @@ router.put("/unsend-follow-request/:id", async (req, res) => {
   if (req.body.userId !== req.params.id) {
     try {
       //Finding the requested user and the current user from the database
-      const requestedUser = await User.findById(req.body.userId);
-      const unRequestingUser = await User.findById(req.params.id);
+      const requestedUser = await User.findById(req.params.id);
+      const unRequestingUser = await User.findById(req.body.userId);
 
       //Checking if the user is been followed by the current user
       if (
         requestedUser.reqRecieved.includes(req.body.userId) &&
-        unRequestingUser.reqSent.includes(req.body.userId)
+        unRequestingUser.reqSent.includes(req.params.id)
       ) {
         //Updating both the users in the database
         await requestedUser.updateOne({
@@ -264,22 +270,27 @@ router.put("/unfollow/:id", async (req, res) => {
   if (req.body.userId !== req.params.id) {
     try {
       //Fetching the requested user and current user
-      const requestedUser = await User.findById(req.params.id);
-      const user = await User.findById(req.body.userId);
+      const unfollowedUser = await User.findById(req.params.id);
+      const unfollowingUser = await User.findById(req.body.userId);
 
       //Checking if the user is already not following the requested user
-      if (requestedUser.followers.includes(req.body.userId)) {
+      if (
+        unfollowedUser.followers.includes(req.body.userId) &&
+        unfollowingUser.following.includes(req.params.id)
+      ) {
         //Updating the requested and the current user in the database
-        await requestedUser.updateOne({
+        await unfollowedUser.updateOne({
           $pull: { followers: req.body.userId },
         });
-        await user.updateOne({ $pull: { following: req.params.id } });
+        await unfollowingUser.updateOne({
+          $pull: { following: req.params.id },
+        });
 
         //Sending back the response
         res.status(200).json("User has been Unfollowed");
       } else {
         //If the is not been followed by the current user
-        res.status(403).json("You does not follow this user!");
+        res.status(403).json("You do not follow this user!");
       }
     } catch (error) {
       //Error Handling
