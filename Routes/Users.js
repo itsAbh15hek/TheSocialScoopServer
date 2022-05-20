@@ -141,7 +141,7 @@ router.put("/follow-request/:id", async (req, res) => {
   }
 });
 //Approve follow request of User
-router.put("/unsend-follow-request/:id", async (req, res) => {
+router.put("/approve-follow-request/:id", async (req, res) => {
   //Chcking that the requested user is not trying to following itself
   if (req.body.userId !== req.params.id) {
     try {
@@ -181,6 +181,42 @@ router.put("/unsend-follow-request/:id", async (req, res) => {
   } else {
     //If the requested user is the current user
     res.status(403).json("You Can not follow yourself!");
+  }
+});
+
+//Unsend follow request of User
+router.put("/unsend-follow-request/:id", async (req, res) => {
+  //Chcking that the requested user is not trying to following itself
+  if (req.body.userId !== req.params.id) {
+    try {
+      //Finding the requested user and the current user from the database
+      const requestedUser = await User.findById(req.body.userId);
+      const unRequestingUser = await User.findById(req.params.id);
+
+      //Checking if the user is been followed by the current user
+      if (
+        requestedUser.reqRecieved.includes(req.body.userId) &&
+        unRequestingUser.reqSent.includes(req.body.userId)
+      ) {
+        //Updating both the users in the database
+        await requestedUser.updateOne({
+          $pull: { reqRecieved: req.body.userId },
+        });
+        await unRequestingUser.updateOne({ $pull: { reqSent: req.params.id } });
+
+        //Sending back the response
+        res.status(200).json("Request Unsent!");
+      } else {
+        //Sending back the response if the user is been followed already
+        res.status(403).json("You have not sent request!");
+      }
+    } catch (error) {
+      //Error Handling
+      res.status(500).json(error);
+    }
+  } else {
+    //If the requested user is the current user
+    res.status(403).json("You Can not reject yourself!");
   }
 });
 
