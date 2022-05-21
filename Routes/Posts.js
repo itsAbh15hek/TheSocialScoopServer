@@ -164,8 +164,8 @@ router.get("/profile/:id", async (req, res) => {
       }
       return 0;
     };
-
     posts.sort(compare);
+    console.log(posts);
     //Sending back the response
     res.status(200).json(posts);
   } catch (error) {

@@ -150,8 +150,6 @@ router.put("/approve-follow-request/:id", async (req, res) => {
       const requestingUser = await User.findById(req.params.id);
 
       //Checking if the user is been followed by the current user
-      console.log(!approvingUser.followers.includes(req.body.userId));
-      console.log(approvingUser.reqRecieved.includes(req.params.id));
       if (
         !approvingUser.followers.includes(req.params.id) &&
         approvingUser.reqRecieved.includes(req.params.id) &&
@@ -165,10 +163,10 @@ router.put("/approve-follow-request/:id", async (req, res) => {
         await approvingUser.updateOne({
           $push: { followers: req.params.id },
         });
-        await requestingUser.updateOne({ $pull: { reqSent: req.body.userId } });
         await requestingUser.updateOne({
           $push: { following: req.body.userId },
         });
+        await requestingUser.updateOne({ $pull: { reqSent: req.body.userId } });
 
         //Sending back the response
         res.status(200).json("User has been Followed");
@@ -354,6 +352,29 @@ router.put("/theme/:id", async (req, res) => {
 
     //Sending back the response
     res.status(200).json({ message: "Default Theme Changed", user });
+  } catch (error) {
+    //Error Handling
+    res.status(500).json(error.message);
+  }
+});
+
+//Get users details
+router.post("/users-details", async (req, res) => {
+  try {
+    const userList = req.body.data;
+    const detailedUserList = await Promise.all(
+      userList.map(async (userId) => {
+        const user = await User.findById(userId);
+        return {
+          userId: user._id,
+          username: user.username,
+          name: user.name,
+          profilePicture: user.profilePicture,
+        };
+      })
+    ).then((value) => value);
+    //Sending back the response
+    res.status(200).json(detailedUserList);
   } catch (error) {
     //Error Handling
     res.status(500).json(error.message);
