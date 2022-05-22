@@ -115,7 +115,6 @@ router.put("/delete-comment/:postId", async (req, res) => {
   try {
     //Finding the post in the database
     const post = await Post.findById(req.params.postId);
-    // console.log(req.body.commentId);
     const newCommentData = post.comments.filter(
       (comment) => comment.id !== req.body.commentId
     );
@@ -165,7 +164,6 @@ router.get("/profile/:id", async (req, res) => {
       return 0;
     };
     posts.sort(compare);
-    console.log(posts);
     //Sending back the response
     res.status(200).json(posts);
   } catch (error) {

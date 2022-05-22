@@ -8,7 +8,6 @@ const User = require("../Schemas/UserSchema");
 router.put("/:id", async (req, res) => {
   //Destructering the body
   const { _id: userId, password } = req.body;
-  console.log(req.body);
   //Checking if user id is present in the database
   if (userId === req.params.id || req.body.isAdmin) {
     //Checking if the password is been requested to changed
@@ -311,7 +310,6 @@ router.get("/friends/:query", async (req, res) => {
       .equals(user[0].following)
       .populate("following")
       .select("name profilePicture _id username");
-    // console.log(friends);
     //Sending backk the response
     res.status(200).json(friends);
   } catch (error) {
@@ -331,7 +329,6 @@ router.get("/followers/:query", async (req, res) => {
       .equals(user[0].followers)
       .populate("followers")
       .select("name profilePicture _id username");
-    // console.log(friends);
     //Sending backk the response
     res.status(200).json(friends);
   } catch (error) {
