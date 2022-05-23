@@ -44,8 +44,9 @@ router.put("/:id", async (req, res) => {
 
 //Delete User
 router.delete("/:id", async (req, res) => {
+  const { _id: userId } = await User.findById(req.params.id);
   //Finding the id in the database
-  if (req.body.userId === req.params.id || req.body.isAdmin) {
+  if (userId === req.params.id || req.body.isAdmin) {
     try {
       //Deleting the user using the id provide
       await User.findByIdAndDelete(req.params.id);
@@ -58,7 +59,7 @@ router.delete("/:id", async (req, res) => {
     }
   } else {
     //If the id don't matched in the database
-    res.status(403).json("You can Delete your Account!");
+    res.status(403).json("You can't Delete your Account!");
   }
 });
 

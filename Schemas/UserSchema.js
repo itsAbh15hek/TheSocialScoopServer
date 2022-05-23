@@ -27,7 +27,8 @@ const UserSchema = new mongoose.Schema(
     },
     profilePicture: {
       type: String,
-      default: "",
+      default:
+        "https://www.hecmsenior.com/wp-content/uploads/2021/06/Profile-Pic-Icon.png",
     },
     following: {
       type: Array,
