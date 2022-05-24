@@ -359,7 +359,7 @@ router.put("/theme/:id", async (req, res) => {
 //Get users details
 router.post("/users-details", async (req, res) => {
   try {
-    const userList = req.body.data;
+    const userList = req.body.data.filter((user) => user !== null);
     const detailedUserList = await Promise.all(
       userList.map(async (userId) => {
         const user = await User.findById(userId);
