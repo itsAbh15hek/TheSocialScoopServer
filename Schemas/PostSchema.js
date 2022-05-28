@@ -14,6 +14,10 @@ const PostSchema = new mongoose.Schema(
     postMedia: {
       type: String,
     },
+    mediaType: {
+      type: String,
+      default: "",
+    },
     likes: {
       type: Array,
       default: [],
