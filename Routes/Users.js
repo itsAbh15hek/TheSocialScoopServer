@@ -67,22 +67,29 @@ router.delete("/:id", async (req, res) => {
 router.get("/:query", async (req, res) => {
   try {
     //Finding the user by id provided
-    // const user = await User.findById(req.params.id);
-    let user = await User.where("username").equals(
-      ($regex = new RegExp("^" + req.params.query.toLowerCase(), "i"))
-    );
 
-    if (user.length === 0) {
-      user = await User.where("name").equals(
-        ($regex = new RegExp("^" + req.params.query.toLowerCase(), "i"))
-      );
-    }
+    const usernameSearch = await User.find({
+      username: new RegExp(req.params.query.toLowerCase(), "i"),
+    });
+    const nameSearch = await User.find({
+      name: new RegExp(req.params.query.toLowerCase(), "i"),
+    });
 
-    //Modifying the object so that confidential information remains hidden
-    const { password, updatedAt, isAdmin, __v, ...displayProps } = user;
+    const filteredUsers = nameSearch.filter((user) => {
+      let alreadyExists = false;
+      usernameSearch?.forEach((u) => {
+        if (u.username === user.username) alreadyExists = true;
+      });
+      if (alreadyExists === false) {
+        const { password, updatedAt, isAdmin, __v, ...displayProps } =
+          user._doc;
+        return { ...displayProps };
+      }
+    });
+    const users = [...usernameSearch, ...filteredUsers];
 
     //Sending back the response
-    res.status(200).json(displayProps);
+    res.status(200).json(users);
   } catch (error) {
     //Error Handling
     res.status(500).json(error.message);
