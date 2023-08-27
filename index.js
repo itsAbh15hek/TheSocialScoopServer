@@ -47,7 +47,6 @@ app.use("/api/message", messageRouter);
 //Self Ping System
 setInterval(() => {
   https.get("https://the-social-scoop-server.onrender.com/api/");
-  console.log("Pinged!");
 }, 600000); // every 10 minutes (600000)
 
 //Establishing the PORT
