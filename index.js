@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const cors = require("cors");
+const https = require("https");
 
 //Importing the Routers
 const userRouter = require("./Routes/Users");
@@ -42,6 +43,12 @@ app.use("/api/auth", authRouter);
 app.use("/api/posts", postsRouter);
 app.use("/api/conversations", conversationsRouter);
 app.use("/api/message", messageRouter);
+
+//Self Ping System
+setInterval(() => {
+  https.get("https://the-social-scoop-server.onrender.com/api/");
+  console.log("Pinged!");
+}, 600000); // every 10 minutes (600000)
 
 //Establishing the PORT
 const PORT = process.env.PORT || 8800;
