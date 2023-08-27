@@ -7,7 +7,7 @@ const User = require("../Schemas/UserSchema");
 //Update User
 router.put("/:id", async (req, res) => {
   //Destructering the body
-  const { userId, password } = req.body;
+  const { _id: userId, password } = req.body;
   //Checking if user id is present in the database
   if (userId === req.params.id || req.body.isAdmin) {
     //Checking if the password is been requested to changed
