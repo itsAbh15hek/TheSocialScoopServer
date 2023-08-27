@@ -7,7 +7,7 @@ const User = require("../Schemas/UserSchema");
 //Update User
 router.put("/:id", async (req, res) => {
   //Destructering the body
-  const { _id: userId, password } = req.body;
+  const { userId, password } = req.body;
   //Checking if user id is present in the database
   if (userId === req.params.id || req.body.isAdmin) {
     //Checking if the password is been requested to changed
@@ -36,7 +36,6 @@ router.put("/:id", async (req, res) => {
     }
   } else {
     //If the id don't been found in the database
-    console.log(error.message);
     return res.status(403).json("You can only update your Account!");
   }
 });
