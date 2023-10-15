@@ -76,7 +76,7 @@ router.get("/:query", async (req, res) => {
     const filteredUsers = nameSearch.filter((user) => {
       let alreadyExists = false;
       usernameSearch?.forEach((u) => {
-        if (u.username === user.username) alreadyExists = true;
+        if (u.username === user.username || u.isAdmin) alreadyExists = true;
       });
       if (alreadyExists === false) {
         const { password, updatedAt, isAdmin, __v, ...displayProps } =
