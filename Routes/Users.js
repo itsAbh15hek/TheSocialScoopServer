@@ -76,7 +76,8 @@ router.get("/:query", async (req, res) => {
     const filteredUsers = nameSearch.filter((user) => {
       let alreadyExists = false;
       usernameSearch?.forEach((u) => {
-        if (u.username === user.username || u.isAdmin) alreadyExists = true;
+        if (u.username === user.username || u.isAdmin || user.isAdmin)
+          alreadyExists = true;
       });
       if (alreadyExists === false) {
         const { password, updatedAt, isAdmin, __v, ...displayProps } =
@@ -380,6 +381,19 @@ router.post("/users-details", async (req, res) => {
     res.status(200).json(detailedUserList);
   } catch (error) {
     //Error Handling
+    res.status(500).json(error.message);
+  }
+});
+
+// Fetching all users
+
+router.get("/all", async (req, res) => {
+  try {
+    const allUsers = await User.find();
+
+    res.status(200).json(allUsers);
+  } catch (error) {
+    // Error Handling
     res.status(500).json(error.message);
   }
 });
